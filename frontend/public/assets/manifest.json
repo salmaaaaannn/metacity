@@ -1,0 +1,637 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-09-22T18:49:17.896Z",
+  "totalAssets": 42,
+  "assets": [
+    {
+      "id": "house_01",
+      "path": "buildings/residential/house_01.glb",
+      "category": "residential",
+      "name": "Suburban House A",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 13244
+    },
+    {
+      "id": "house_02",
+      "path": "buildings/residential/house_02.glb",
+      "category": "residential",
+      "name": "Suburban House B",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 9476
+    },
+    {
+      "id": "apartment_mid_01",
+      "path": "buildings/residential/apartment_mid_01.glb",
+      "category": "residential",
+      "name": "Mid-Rise Apartment Block",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 53988
+    },
+    {
+      "id": "apartment_tower_01",
+      "path": "buildings/residential/apartment_tower_01.glb",
+      "category": "residential",
+      "name": "Residential High-Rise Tower",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 5588
+    },
+    {
+      "id": "store_01",
+      "path": "buildings/commercial/store_01.glb",
+      "category": "commercial",
+      "name": "Retail Commercial Store",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 5784
+    },
+    {
+      "id": "office_mid_01",
+      "path": "buildings/office/office_mid_01.glb",
+      "category": "office",
+      "name": "Tech Office Mid-Rise",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 10952
+    },
+    {
+      "id": "office_tower_01",
+      "path": "buildings/office/office_tower_01.glb",
+      "category": "office",
+      "name": "CBD Glass Skyscraper",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 8408
+    },
+    {
+      "id": "hospital_01",
+      "path": "buildings/healthcare/hospital_01.glb",
+      "category": "healthcare",
+      "name": "Metropolitan Hospital",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 11904
+    },
+    {
+      "id": "school_01",
+      "path": "buildings/education/school_01.glb",
+      "category": "education",
+      "name": "City Public School",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 7236
+    },
+    {
+      "id": "police_01",
+      "path": "buildings/civic/police_01.glb",
+      "category": "civic",
+      "name": "Police Department Station",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 3928
+    },
+    {
+      "id": "fire_station_01",
+      "path": "buildings/civic/fire_station_01.glb",
+      "category": "civic",
+      "name": "Fire & Rescue Station",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 7368
+    },
+    {
+      "id": "factory_01",
+      "path": "buildings/industrial/factory_01.glb",
+      "category": "industrial",
+      "name": "Manufacturing Plant",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 11352
+    },
+    {
+      "id": "warehouse_01",
+      "path": "buildings/industrial/warehouse_01.glb",
+      "category": "industrial",
+      "name": "Logistics Distribution Warehouse",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 9160
+    },
+    {
+      "id": "construction_site",
+      "path": "buildings/special/construction_site.glb",
+      "category": "special",
+      "name": "Construction Crane & Site",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 7440
+    },
+    {
+      "id": "central_tower",
+      "path": "buildings/special/central_tower.glb",
+      "category": "special",
+      "name": "Central Landmark Skyscraper",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 7752
+    },
+    {
+      "id": "metro_station_elevated",
+      "path": "metro/stations/metro_station_elevated.glb",
+      "category": "metro",
+      "name": "Elevated Metro Station",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 15464
+    },
+    {
+      "id": "metro_train_car",
+      "path": "metro/trains/metro_train_car.glb",
+      "category": "metro",
+      "name": "Rapid Transit Metro Train",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 20756
+    },
+    {
+      "id": "railway_locomotive",
+      "path": "railway/trains/railway_locomotive.glb",
+      "category": "railway",
+      "name": "Heavy Rail Electric Locomotive",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 5736
+    },
+    {
+      "id": "railway_passenger_car",
+      "path": "railway/trains/railway_passenger_car.glb",
+      "category": "railway",
+      "name": "Heavy Rail Passenger Car",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 5884
+    },
+    {
+      "id": "sedan_blue",
+      "path": "vehicles/cars/sedan_blue.glb",
+      "category": "vehicles",
+      "name": "Sedan Car (Blue)",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 16104
+    },
+    {
+      "id": "sedan_red",
+      "path": "vehicles/cars/sedan_red.glb",
+      "category": "vehicles",
+      "name": "Sedan Car (Red)",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 16104
+    },
+    {
+      "id": "taxi_01",
+      "path": "vehicles/cars/taxi_01.glb",
+      "category": "vehicles",
+      "name": "City Taxi Cab",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 16104
+    },
+    {
+      "id": "suv_01",
+      "path": "vehicles/cars/suv_01.glb",
+      "category": "vehicles",
+      "name": "SUV Passenger Vehicle",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 8508
+    },
+    {
+      "id": "van_01",
+      "path": "vehicles/cars/van_01.glb",
+      "category": "vehicles",
+      "name": "Passenger Van",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 4024
+    },
+    {
+      "id": "city_bus",
+      "path": "vehicles/buses/city_bus.glb",
+      "category": "vehicles",
+      "name": "City Transit Bus",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 12576
+    },
+    {
+      "id": "delivery_truck",
+      "path": "vehicles/trucks/delivery_truck.glb",
+      "category": "vehicles",
+      "name": "Commercial Delivery Truck",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 3988
+    },
+    {
+      "id": "heavy_truck",
+      "path": "vehicles/trucks/heavy_truck.glb",
+      "category": "vehicles",
+      "name": "Heavy Freight Hauler",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 3992
+    },
+    {
+      "id": "police_car",
+      "path": "vehicles/police/police_car.glb",
+      "category": "vehicles",
+      "name": "Police Cruiser",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 18012
+    },
+    {
+      "id": "ambulance",
+      "path": "vehicles/ambulance/ambulance.glb",
+      "category": "vehicles",
+      "name": "Emergency Ambulance",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 3992
+    },
+    {
+      "id": "fire_truck",
+      "path": "vehicles/fire/fire_truck.glb",
+      "category": "vehicles",
+      "name": "Fire Engine",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 4032
+    },
+    {
+      "id": "tree_oak",
+      "path": "environment/trees/tree_oak.glb",
+      "category": "environment",
+      "name": "Deciduous Oak Tree",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 32756
+    },
+    {
+      "id": "tree_pine",
+      "path": "environment/trees/tree_pine.glb",
+      "category": "environment",
+      "name": "Evergreen Pine Conifer",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 10152
+    },
+    {
+      "id": "tree_birch",
+      "path": "environment/trees/tree_birch.glb",
+      "category": "environment",
+      "name": "Birch Tree",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 17932
+    },
+    {
+      "id": "bush_01",
+      "path": "environment/bushes/bush_01.glb",
+      "category": "environment",
+      "name": "Park Shrub Bush",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 29788
+    },
+    {
+      "id": "park_fountain",
+      "path": "environment/props/park_fountain.glb",
+      "category": "environment",
+      "name": "Park Decorative Fountain",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 12580
+    },
+    {
+      "id": "rock_cluster",
+      "path": "environment/rocks/rock_cluster.glb",
+      "category": "environment",
+      "name": "Natural Rock Cluster",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 9148
+    },
+    {
+      "id": "streetlight",
+      "path": "street/lights/streetlight.glb",
+      "category": "street",
+      "name": "Cobra-Head Streetlight",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 7392
+    },
+    {
+      "id": "traffic_light",
+      "path": "street/traffic_lights/traffic_light.glb",
+      "category": "street",
+      "name": "Intersection Traffic Signal",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 17256
+    },
+    {
+      "id": "park_bench",
+      "path": "street/benches/park_bench.glb",
+      "category": "street",
+      "name": "Wooden Park Bench",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 7648
+    },
+    {
+      "id": "fire_hydrant",
+      "path": "street/barriers/fire_hydrant.glb",
+      "category": "street",
+      "name": "Municipal Fire Hydrant",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 9848
+    },
+    {
+      "id": "jersey_barrier",
+      "path": "street/barriers/jersey_barrier.glb",
+      "category": "street",
+      "name": "Concrete Jersey Barrier",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 2140
+    },
+    {
+      "id": "stop_sign",
+      "path": "street/signs/stop_sign.glb",
+      "category": "street",
+      "name": "Octagonal Stop Sign",
+      "format": "glb",
+      "license": "CC0 1.0 Universal",
+      "creator": "METACITY Asset Pipeline (CC0)",
+      "dimensions": [
+        10,
+        10,
+        10
+      ],
+      "fileSizeBytes": 6180
+    }
+  ]
+}

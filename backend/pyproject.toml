@@ -1,0 +1,20 @@
+[project]
+name = "metacity-backend"
+version = "0.1.0"
+description = "METACITY API Backend"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.6",
+    "websockets>=13.0",
+    "pydantic>=2.9.2",
+    "pydantic-settings>=2.5.2",
+    "python-dotenv>=1.0.1",
+    "supabase>=2.7.4",
+    "networkx>=3.3",
+    "numpy>=2.1.1",
+    "scipy>=1.14.1"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
