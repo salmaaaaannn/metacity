@@ -1,683 +1,236 @@
-import React, { useRef, useMemo, useEffect } from 'react'
+import React, { useMemo, useRef, useEffect, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
+import { OrthographicCamera } from '@react-three/drei'
 import * as THREE from 'three'
 
 interface CinematicHeroCityProps {
-  replayKey: number
-  onTimelineProgress: (elapsed: number) => void
+  elapsedTime?: number
+  replayKey?: number
+  onTimelineProgress?: (t: number) => void
 }
 
-// ── Cinematic Camera Rig (Exact 0.0 – 8.0s Flight Sequence) ─────────────────
-function CinematicCameraRig({
-  replayKey,
-  onTimelineProgress,
-}: {
-  replayKey: number
-  onTimelineProgress: (elapsed: number) => void
-}) {
-  const startTimeRef = useRef<number | null>(null)
-  const lookTargetRef = useRef(new THREE.Vector3(0, 10, 0))
+function ProceduralCityGrid() {
+  const groupRef = useRef<THREE.Group>(null)
+  const coreMeshRef = useRef<THREE.InstancedMesh>(null)
+  const wireMeshRef = useRef<THREE.InstancedMesh>(null)
+  const mountTimeRef = useRef(0)
 
-  useEffect(() => {
-    startTimeRef.current = null
-  }, [replayKey])
+  // Crimson Nexus Grid Math
+  const { count, instances } = useMemo(() => {
+    const GRID_SIZE = 25
+    const SPACING = 2.5
+    const total = GRID_SIZE * GRID_SIZE
+    
+    const instances = []
+    
+    for (let x = -Math.floor(GRID_SIZE/2); x <= Math.floor(GRID_SIZE/2); x++) {
+      for (let z = -Math.floor(GRID_SIZE/2); z <= Math.floor(GRID_SIZE/2); z++) {
+        const distFromCenter = Math.sqrt(x*x + z*z)
+        
+        // Downtown in center, suburbs on edge
+        const maxH = 25
+        const spread = 8
+        const baseH = Math.exp(-(distFromCenter*distFromCenter) / (spread*spread)) * maxH
+        
+        // Add variation
+        const noise = Math.random() * 3
+        const h = Math.max(0.5, baseH + noise)
+        
+        // Delay animation based on distance from center to create the "ripple" effect
+        const delay = distFromCenter * 0.15
+        
+        // Critical buildings (Red) vs Normal (Cyan)
+        const isCritical = Math.random() > 0.94
+        const color = new THREE.Color(isCritical ? '#FF2E4D' : '#00E5FF')
 
-  useFrame(({ camera, clock }) => {
-    if (startTimeRef.current === null) {
-      startTimeRef.current = clock.getElapsedTime()
-    }
-    const elapsed = clock.getElapsedTime() - startTimeRef.current
-    onTimelineProgress(elapsed)
-
-    // 0.0 - 0.6s: Drone low-altitude approach
-    // 0.6 - 1.8s: Sweep diagonally across the CBD
-    // 1.8 - 3.0s: Pull up and orbit
-    // 3.0 - 4.2s: Continue rising to hero altitude
-    // 4.2 - 5.2s: Settle to hero position with light sweep
-    // 5.2 - 6.5s: Stable framing, title reveals
-    // 6.5s+: Ambient drift
-    let camPos = new THREE.Vector3(80, 15, 100)
-    let lookPos = new THREE.Vector3(0, 15, 0)
-
-    if (elapsed < 0.6) {
-      const p = elapsed / 0.6
-      camPos.set(80 - p * 20, 15, 100 - p * 20)
-      lookPos.set(0, 15, 0)
-    } else if (elapsed < 1.8) {
-      const p = (elapsed - 0.6) / 1.2
-      const smoothP = p * p * (3 - 2 * p)
-      camPos.set(
-        THREE.MathUtils.lerp(60, 20, smoothP),
-        THREE.MathUtils.lerp(15, 25, smoothP),
-        THREE.MathUtils.lerp(80, 40, smoothP)
-      )
-      lookPos.set(
-        THREE.MathUtils.lerp(0, -10, smoothP),
-        15,
-        THREE.MathUtils.lerp(0, -20, smoothP)
-      )
-    } else if (elapsed < 3.0) {
-      const p = (elapsed - 1.8) / 1.2
-      const smoothP = p * p * (3 - 2 * p)
-      camPos.set(
-        THREE.MathUtils.lerp(20, -30, smoothP),
-        THREE.MathUtils.lerp(25, 50, smoothP),
-        THREE.MathUtils.lerp(40, 50, smoothP)
-      )
-      lookPos.set(
-        THREE.MathUtils.lerp(-10, 0, smoothP),
-        15,
-        THREE.MathUtils.lerp(-20, 0, smoothP)
-      )
-    } else if (elapsed < 4.2) {
-      const p = (elapsed - 3.0) / 1.2
-      const smoothP = p * p * (3 - 2 * p)
-      camPos.set(
-        THREE.MathUtils.lerp(-30, 0, smoothP),
-        THREE.MathUtils.lerp(50, 65, smoothP),
-        THREE.MathUtils.lerp(50, 90, smoothP)
-      )
-      lookPos.set(0, 15, THREE.MathUtils.lerp(0, -12, smoothP))
-    } else if (elapsed < 5.2) {
-      const p = (elapsed - 4.2) / 1.0
-      const smoothP = p * p * (3 - 2 * p)
-      camPos.set(
-        0,
-        THREE.MathUtils.lerp(65, 18, smoothP),
-        THREE.MathUtils.lerp(90, 42, smoothP)
-      )
-      lookPos.set(0, 15, -12)
-    } else {
-      // 5.2s onwards: stable majestic hero shot with subtle cinematic drift
-      const driftT = elapsed - 5.2
-      const driftX = Math.sin(driftT * 0.15) * 4
-      const driftY = 18 + Math.cos(driftT * 0.12) * 1.5
-      const driftZ = 42 + Math.sin(driftT * 0.1) * 3
-      camPos.set(driftX, driftY, driftZ)
-      lookPos.set(0, 15, -12)
-    }
-
-    camera.position.lerp(camPos, 0.08)
-    lookTargetRef.current.lerp(lookPos, 0.08)
-    camera.lookAt(lookTargetRef.current)
-  })
-
-  return null
-}
-
-// ── Light Sweep Animation across Central Skyline (at 4.2 – 5.2s) ────────────
-function SkylineLightSweep({ elapsed }: { elapsed: number }) {
-  const sweepLightRef = useRef<THREE.SpotLight>(null)
-
-  useFrame(() => {
-    if (!sweepLightRef.current) return
-    if (elapsed >= 4.0 && elapsed <= 6.2) {
-      const p = (elapsed - 4.0) / 2.2
-      sweepLightRef.current.position.x = -60 + p * 120
-      sweepLightRef.current.intensity = Math.sin(p * Math.PI) * 4.5
-    } else {
-      sweepLightRef.current.intensity = 0
-    }
-  })
-
-  return (
-    <spotLight
-      ref={sweepLightRef}
-      position={[-60, 45, 10]}
-      target-position={[0, 15, -10]}
-      color="#07CCF4"
-      angle={0.6}
-      penumbra={0.8}
-      intensity={0}
-      distance={140}
-    />
-  )
-}
-
-// ── Dynamic Moving Traffic (Headlights & Taillights) ─────────────────────────
-function MovingTrafficStream({ elapsed }: { elapsed: number }) {
-  const carsCount = 300
-  const instancedRef = useRef<THREE.InstancedMesh>(null)
-  const dummy = useMemo(() => new THREE.Object3D(), [])
-
-  const cars = useMemo(() => {
-    const list = []
-    for (let i = 0; i < carsCount; i++) {
-      const isNorthSouth = i % 2 === 0
-      const isExpress = i % 5 === 0
-      const lane = (i % 6) * 3 - 7.5
-      const speed = isExpress ? 28 + (i % 4) * 4 : 14 + (i % 5) * 3
-      const color = isExpress ? '#07CCF4' : (i % 3 === 0 ? '#FBBF24' : (i % 3 === 1 ? '#FFFFFF' : '#3B82F6'))
-      list.push({
-        isNorthSouth,
-        lane,
-        speed,
-        offset: (i / carsCount) * 360 - 180,
-        color: new THREE.Color(color),
-      })
-    }
-    return list
-  }, [carsCount])
-
-  useFrame(() => {
-    if (!instancedRef.current) return
-    const activeFactor = Math.min(1, Math.max(0, (elapsed - 0.8) / 1.5))
-    if (activeFactor <= 0) {
-      instancedRef.current.visible = false
-      return
-    }
-    instancedRef.current.visible = true
-
-    cars.forEach((car, idx) => {
-      let x = 0
-      let z = 0
-      let rotY = 0
-
-      if (car.isNorthSouth) {
-        x = car.lane
-        z = ((car.offset + elapsed * car.speed) % 360) - 180
-        rotY = 0
-      } else {
-        x = ((car.offset + elapsed * car.speed) % 360) - 180
-        z = car.lane - 25
-        rotY = Math.PI / 2
-      }
-
-      dummy.position.set(x, 0.4, z)
-      dummy.rotation.set(0, rotY, 0)
-      dummy.scale.set(1.4 * activeFactor, 0.6 * activeFactor, 3.2 * activeFactor)
-      dummy.updateMatrix()
-      instancedRef.current!.setMatrixAt(idx, dummy.matrix)
-    })
-    instancedRef.current.instanceMatrix.needsUpdate = true
-  })
-
-  const geom = useMemo(() => new THREE.BoxGeometry(1, 1, 1), [])
-  const mat = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        color: '#07CCF4',
-      }),
-    []
-  )
-
-  return <instancedMesh ref={instancedRef} args={[geom, mat, carsCount]} />
-}
-
-// ── Moving Elevated Metro Train ─────────────────────────────────────────────
-function MovingMetroTrain({ elapsed }: { elapsed: number }) {
-  const trainRef = useRef<THREE.Group>(null)
-
-  useFrame(() => {
-    if (!trainRef.current) return
-    const speed = 26
-    const posZ = ((elapsed * speed) % 320) - 160
-    trainRef.current.position.set(-18, 5.2, posZ)
-  })
-
-  return (
-    <group ref={trainRef}>
-      {/* 3 Passenger carriages */}
-      {[0, 1, 2].map((carIdx) => (
-        <mesh key={carIdx} position={[0, 0, carIdx * 9 - 9]}>
-          <boxGeometry args={[2.4, 2.2, 8]} />
-          <meshStandardMaterial
-            color="#0A1628"
-            emissive="#07CCF4"
-            emissiveIntensity={0.65}
-            roughness={0.2}
-            metalness={0.8}
-          />
-        </mesh>
-      ))}
-      {/* Headlight beam */}
-      <pointLight position={[0, 0.5, 6]} color="#63ECFE" intensity={3.5} distance={25} />
-    </group>
-  )
-}
-
-// ── Atmospheric Cyan Data Particles (Digital Twin Nodes) ─────────────────────
-function AmbientCityParticles({ elapsed }: { elapsed: number }) {
-  const count = 300
-  const pointsRef = useRef<THREE.Points>(null)
-
-  const [positions] = useMemo(() => {
-    const pos = new Float32Array(count * 3)
-    for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 220
-      pos[i * 3 + 1] = 4 + Math.random() * 55
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 220
-    }
-    return [pos]
-  }, [count])
-
-  useFrame(({ clock }) => {
-    if (!pointsRef.current) return
-    const t = clock.getElapsedTime()
-    pointsRef.current.rotation.y = t * 0.03
-  })
-
-  return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={1.6}
-        color="#07CCF4"
-        transparent
-        opacity={Math.min(0.75, elapsed * 0.25)}
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </points>
-  )
-}
-
-// ── Varied Architectural City Grid ──────────────────────────────────────────
-function CityArchitecturalLandscape({ elapsed }: { elapsed: number }) {
-  // Diverse building layouts: central skyscrapers, mid-rises, civic, airport
-  const buildings = useMemo(() => {
-    const list = []
-    const seedRandom = (s: number) => {
-      const x = Math.sin(s++) * 10000
-      return x - Math.floor(x)
-    }
-
-    let seed = 42
-    // Central CBD Skyscrapers (7x7 grid, 49 buildings)
-    for (let row = -3; row <= 3; row++) {
-      for (let col = -3; col <= 3; col++) {
-        const height = 40 + seedRandom(seed++) * 50 // 40-90m
-        list.push({
-          x: col * 14 + (seedRandom(seed++) - 0.5) * 3, // tight 14m spacing
-          z: row * 14 - 15 + (seedRandom(seed++) - 0.5) * 3,
-          width: 8 + seedRandom(seed++) * 4,
-          depth: 8 + seedRandom(seed++) * 4,
-          height,
-          isSkyscraper: true,
-          hasSpire: seedRandom(seed++) > 0.4,
-          glowColor: '#07CCF4',
+        instances.push({
+          px: x * SPACING,
+          pz: z * SPACING,
+          targetH: h,
+          delay,
+          color,
+          w: SPACING * 0.75, // Guarantee padding between blocks
+          d: SPACING * 0.75
         })
       }
     }
-
-    // Mid-ring (24 buildings in a wider ring)
-    for (let i = 0; i < 24; i++) {
-      const angle = (i / 24) * Math.PI * 2
-      const radius = 50 + seedRandom(seed++) * 15
-      const height = 18 + seedRandom(seed++) * 27 // 18-45m
-      list.push({
-        x: Math.cos(angle) * radius,
-        z: Math.sin(angle) * radius - 15,
-        width: 10 + seedRandom(seed++) * 5,
-        depth: 10 + seedRandom(seed++) * 5,
-        height,
-        isSkyscraper: false,
-        hasSpire: false,
-        glowColor: seedRandom(seed++) > 0.5 ? '#00ACE7' : '#005AA6',
-      })
-    }
-
-    // Outer residential (40 buildings in outer ring)
-    for (let i = 0; i < 40; i++) {
-      const angle = (i / 40) * Math.PI * 2
-      const radius = 80 + seedRandom(seed++) * 30
-      const height = 6 + seedRandom(seed++) * 14 // 6-20m
-      list.push({
-        x: Math.cos(angle) * radius,
-        z: Math.sin(angle) * radius - 15,
-        width: 12 + seedRandom(seed++) * 6,
-        depth: 12 + seedRandom(seed++) * 6,
-        height,
-        isSkyscraper: false,
-        hasSpire: false,
-        glowColor: '#005AA6',
-      })
-    }
-
-    // Industrial sector (15 buildings, one corner)
-    for (let i = 0; i < 15; i++) {
-      list.push({
-        x: -90 + seedRandom(seed++) * 40,
-        z: -90 + seedRandom(seed++) * 40,
-        width: 15 + seedRandom(seed++) * 10,
-        depth: 15 + seedRandom(seed++) * 10,
-        height: 8 + seedRandom(seed++) * 8, // 8-16m
-        isSkyscraper: false,
-        hasSpire: false,
-        glowColor: '#1E293B',
-      })
-    }
-
-    // Waterfront (12 buildings along one edge)
-    for (let i = 0; i < 12; i++) {
-      list.push({
-        x: -60 + seedRandom(seed++) * 120,
-        z: 40 + seedRandom(seed++) * 20,
-        width: 10 + seedRandom(seed++) * 6,
-        depth: 10 + seedRandom(seed++) * 6,
-        height: 20 + seedRandom(seed++) * 30, // 20-50m
-        isSkyscraper: true,
-        hasSpire: false,
-        glowColor: '#00ACE7',
-      })
-    }
-
-    return list
+    
+    return { count: total, instances }
   }, [])
 
-  // Emergence animation factor (0.0 to 1.8s)
-  const emergence = Math.min(1, Math.max(0, (elapsed - 0.4) / 1.6))
+  // Data Pulses (Traffic)
+  const pulseMeshRef = useRef<THREE.InstancedMesh>(null)
+  const { pulseCount, pulses } = useMemo(() => {
+    const pCount = 150
+    const pArray = []
+    const GRID_SIZE = 25
+    const SPACING = 2.5
+    const halfGrid = (GRID_SIZE * SPACING) / 2
+    
+    for (let i = 0; i < pCount; i++) {
+      const isXAxis = Math.random() > 0.5
+      const linePos = (Math.floor(Math.random() * GRID_SIZE) - Math.floor(GRID_SIZE/2)) * SPACING
+      const startPos = (Math.random() * GRID_SIZE * SPACING) - halfGrid
+      const speed = (Math.random() * 8 + 4) * (Math.random() > 0.5 ? 1 : -1)
+      
+      const color = new THREE.Color(Math.random() > 0.3 ? '#00E5FF' : '#FFB020')
+      
+      pArray.push({
+        x: isXAxis ? startPos : linePos,
+        z: isXAxis ? linePos : startPos,
+        isXAxis,
+        speed,
+        color
+      })
+    }
+    return { pulseCount: pCount, pulses: pArray }
+  }, [])
+
+  useEffect(() => {
+    mountTimeRef.current = Date.now()
+
+    if (wireMeshRef.current && coreMeshRef.current) {
+      instances.forEach((inst, i) => {
+        wireMeshRef.current!.setColorAt(i, inst.color)
+      })
+      wireMeshRef.current.instanceColor!.needsUpdate = true
+    }
+
+    if (pulseMeshRef.current) {
+      pulses.forEach((p, i) => {
+        pulseMeshRef.current!.setColorAt(i, p.color)
+      })
+      pulseMeshRef.current.instanceColor!.needsUpdate = true
+    }
+  }, [instances, pulses])
+
+  const tempMatrix = new THREE.Matrix4()
+  const tempPos = new THREE.Vector3()
+  const tempScale = new THREE.Vector3()
+  const tempQuat = new THREE.Quaternion()
+
+  useFrame(() => {
+    const t = (Date.now() - mountTimeRef.current) / 1000
+
+    if (groupRef.current) {
+      groupRef.current.rotation.y = t * 0.05
+    }
+
+    // Update Buildings
+    if (coreMeshRef.current && wireMeshRef.current) {
+      for (let i = 0; i < count; i++) {
+        const inst = instances[i]
+        
+        let currentH = 0.01 
+        if (t > inst.delay) {
+          const progress = Math.min((t - inst.delay) / 1.5, 1.0)
+          const easeOutCubic = 1 - Math.pow(1 - progress, 3)
+          currentH = Math.max(0.01, inst.targetH * easeOutCubic)
+        }
+
+        tempPos.set(inst.px, currentH / 2, inst.pz)
+        tempScale.set(inst.w, currentH, inst.d)
+        tempMatrix.compose(tempPos, tempQuat, tempScale)
+        
+        coreMeshRef.current.setMatrixAt(i, tempMatrix)
+        wireMeshRef.current.setMatrixAt(i, tempMatrix)
+      }
+      
+      coreMeshRef.current.instanceMatrix.needsUpdate = true
+      wireMeshRef.current.instanceMatrix.needsUpdate = true
+    }
+
+    // Update Data Pulses
+    if (pulseMeshRef.current) {
+      const halfGrid = (25 * 2.5) / 2
+      for (let i = 0; i < pulseCount; i++) {
+        const p = pulses[i]
+        
+        // Move pulse
+        if (p.isXAxis) {
+          p.x += p.speed * 0.016 // Approx 60fps delta
+          if (p.x > halfGrid) p.x = -halfGrid
+          if (p.x < -halfGrid) p.x = halfGrid
+        } else {
+          p.z += p.speed * 0.016
+          if (p.z > halfGrid) p.z = -halfGrid
+          if (p.z < -halfGrid) p.z = halfGrid
+        }
+
+        // Only show pulse if the center buildings have started animating
+        const pulseScale = t > 0.5 ? 0.3 : 0.01
+
+        tempPos.set(p.x, 0.2, p.z)
+        tempScale.set(pulseScale, pulseScale, pulseScale)
+        tempMatrix.compose(tempPos, tempQuat, tempScale)
+        pulseMeshRef.current.setMatrixAt(i, tempMatrix)
+      }
+      pulseMeshRef.current.instanceMatrix.needsUpdate = true
+    }
+  })
 
   return (
-    <group>
-      {buildings.map((b, idx) => {
-        const curHeight = b.height * emergence
-        if (curHeight <= 0.1) return null
-        const bandCount = Math.floor(curHeight / 3)
+    <group ref={groupRef}>
+      {/* 1. Base Grid Layer (Border Line #2A3441) */}
+      <gridHelper args={[100, 40, '#2A3441', '#2A3441']} position={[0, -0.01, 0]} />
 
-        return (
-          <group key={idx} position={[b.x, curHeight / 2, b.z]}>
-            {/* Main Building Massing */}
-            <mesh>
-              <boxGeometry args={[b.width, curHeight, b.depth]} />
-              <meshStandardMaterial
-                color="#060C1B"
-                roughness={0.15}
-                metalness={0.85}
-                emissive={b.glowColor}
-                emissiveIntensity={b.isSkyscraper ? 0.35 : 0.18}
-              />
-            </mesh>
+      {/* 2. Building Core (Carbon Black / Graphite) */}
+      <instancedMesh ref={coreMeshRef} args={[undefined, undefined, count]} castShadow receiveShadow>
+        <boxGeometry />
+        <meshStandardMaterial color="#0B0F14" metalness={0.8} roughness={0.2} />
+      </instancedMesh>
 
-            {/* Glowing Window Band Strata */}
-            <mesh position={[0, 0, 0]}>
-              <boxGeometry args={[b.width * 1.01, curHeight * 0.9, b.depth * 1.01]} />
-              <meshStandardMaterial
-                color="#020817"
-                emissive={b.glowColor}
-                emissiveIntensity={0.5}
-                wireframe
-                transparent
-                opacity={0.35}
-              />
-            </mesh>
+      {/* 3. Building Edges/Digital Wireframe (Electric Cyan & Primary Red) */}
+      <instancedMesh ref={wireMeshRef} args={[undefined, undefined, count]}>
+        <boxGeometry />
+        <meshBasicMaterial 
+          wireframe={true} 
+          transparent={true} 
+          opacity={0.5} 
+          blending={THREE.AdditiveBlending}
+        />
+      </instancedMesh>
 
-            {/* Added horizontal window bands for buildings > 15m */}
-            {b.height > 15 && bandCount > 0 && Array.from({ length: bandCount }).map((_, i) => (
-              <mesh key={`band_${i}`} position={[0, -curHeight / 2 + i * 3 + 1.5, 0]}>
-                <boxGeometry args={[b.width * 1.02, 0.2, b.depth * 1.02]} />
-                <meshBasicMaterial color={b.glowColor} transparent opacity={0.6} />
-              </mesh>
-            ))}
-
-            {/* Base glow for buildings > 25m */}
-            {b.height > 25 && (
-              <mesh position={[0, -curHeight / 2 + 0.1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[b.width * 1.5, b.depth * 1.5]} />
-                <meshBasicMaterial color={b.glowColor} transparent opacity={0.3} />
-              </mesh>
-            )}
-
-            {/* Roof Top Crown / Architectural Spire */}
-            {b.hasSpire && curHeight > 30 && (
-              <mesh position={[0, curHeight / 2 + 5, 0]}>
-                <coneGeometry args={[1.2, 10, 8]} />
-                <meshBasicMaterial color="#63ECFE" />
-              </mesh>
-            )}
-          </group>
-        )
-      })}
-
-      {/* Airport Sector (Runway Lights & Terminal) */}
-      <group position={[70, 0.1, -40]}>
-        {/* Runway Strip */}
-        <mesh rotation={[-Math.PI / 2, 0, -0.4]}>
-          <planeGeometry args={[18, 120]} />
-          <meshStandardMaterial color="#0A0E1A" roughness={0.9} />
-        </mesh>
-        {/* Runway Centerline Lights */}
-        {Array.from({ length: 12 }).map((_, i) => (
-          <mesh
-            key={i}
-            position={[
-              Math.sin(-0.4) * (i * 9 - 50),
-              0.2,
-              Math.cos(-0.4) * (i * 9 - 50),
-            ]}
-          >
-            <sphereGeometry args={[0.4, 8, 8]} />
-            <meshBasicMaterial color={i % 3 === 0 ? '#34D399' : '#07CCF4'} />
-          </mesh>
-        ))}
-        {/* Airport Control Tower */}
-        <mesh position={[-16, 12, 0]}>
-          <cylinderGeometry args={[2, 2.8, 24, 12]} />
-          <meshStandardMaterial color="#0E172A" emissive="#005AA6" emissiveIntensity={0.4} />
-        </mesh>
-        <mesh position={[-16, 25, 0]}>
-          <cylinderGeometry args={[4.5, 3.5, 4, 12]} />
-          <meshStandardMaterial color="#1E293B" emissive="#07CCF4" emissiveIntensity={0.8} />
-        </mesh>
-      </group>
+      {/* 4. Data Pulses (Traffic) */}
+      <instancedMesh ref={pulseMeshRef} args={[undefined, undefined, pulseCount]}>
+        <boxGeometry />
+        <meshBasicMaterial 
+          transparent={true}
+          opacity={0.8}
+          blending={THREE.AdditiveBlending}
+        />
+      </instancedMesh>
     </group>
   )
 }
 
-// ── Glowing Transportation Network (Roads & Bridges) ─────────────────────────
-function RoadAndTransitGrid({ elapsed }: { elapsed: number }) {
-  const glowAlpha = Math.min(0.8, Math.max(0, (elapsed - 0.6) / 1.4))
-
+export function CinematicHeroCity(props: CinematicHeroCityProps) {
+  // Enforce 100vw/100vh absolute sizing to prevent layout breaks on mobile
   return (
-    <group position={[0, 0.05, 0]}>
-      {/* Ground Water Plate (Reflective Bay) */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, -60]}>
-        <planeGeometry args={[400, 160]} />
-        <meshStandardMaterial
-          color="#030712"
-          roughness={0.08}
-          metalness={0.95}
-        />
-      </mesh>
-
-      {/* Main Ground Asphalt */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 20]}>
-        <planeGeometry args={[400, 240]} />
-        <meshStandardMaterial color="#060815" roughness={0.8} />
-      </mesh>
-
-      {/* Primary Glowing Arterial Avenues */}
-      {[-50, -30, -10, 10, 30, 50].map((xPos) => (
-        <mesh key={`n_s_${xPos}`} rotation={[-Math.PI / 2, 0, 0]} position={[xPos, 0.08, 0]}>
-          <planeGeometry args={[10, 320]} />
-          <meshBasicMaterial
-            color="#005AA6"
-            transparent
-            opacity={glowAlpha * 0.6}
-          />
-        </mesh>
-      ))}
-
-      {/* Luminous Center Highway Ribbon */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 0]}>
-        <planeGeometry args={[1.5, 320]} />
-        <meshBasicMaterial
-          color="#07CCF4"
-          transparent
-          opacity={glowAlpha}
-        />
-      </mesh>
-
-      {/* East-West Cross Expressways */}
-      {[-50, -30, -10, 10, 30, 50].map((zPos) => (
-        <mesh key={`e_w_${zPos}`} rotation={[-Math.PI / 2, 0, Math.PI / 2]} position={[0, 0.08, zPos]}>
-          <planeGeometry args={[8, 320]} />
-          <meshBasicMaterial
-            color="#005AA6"
-            transparent
-            opacity={glowAlpha * 0.5}
-          />
-        </mesh>
-      ))}
-
-      {/* Glowing Intersections */}
-      {[-50, -30, -10, 10, 30, 50].map((xPos) => 
-        [-50, -30, -10, 10, 30, 50].map((zPos) => (
-          <mesh key={`int_${xPos}_${zPos}`} position={[xPos, 0.12, zPos]} rotation={[-Math.PI / 2, 0, 0]}>
-            <circleGeometry args={[3, 16]} />
-            <meshBasicMaterial color="#07CCF4" transparent opacity={glowAlpha * 0.8} />
-          </mesh>
-        ))
-      )}
-
-      {/* Cable-stayed Suspension Bridge Crossing Water */}
-      <group position={[0, 0, -60]}>
-        {/* Bridge deck */}
-        <mesh position={[0, 2, 0]}>
-          <boxGeometry args={[14, 1.2, 110]} />
-          <meshStandardMaterial color="#0F172A" roughness={0.3} metalness={0.8} />
-        </mesh>
-        {/* Bridge Pylons */}
-        {[-30, 30].map((z, idx) => (
-          <group key={idx} position={[0, 16, z]}>
-            <mesh position={[-7, 0, 0]}>
-              <boxGeometry args={[1.8, 32, 2.2]} />
-              <meshStandardMaterial color="#1E293B" emissive="#07CCF4" emissiveIntensity={0.5} />
-            </mesh>
-            <mesh position={[7, 0, 0]}>
-              <boxGeometry args={[1.8, 32, 2.2]} />
-              <meshStandardMaterial color="#1E293B" emissive="#07CCF4" emissiveIntensity={0.5} />
-            </mesh>
-            {/* Top crossbeam */}
-            <mesh position={[0, 12, 0]}>
-              <boxGeometry args={[16, 2, 2.2]} />
-              <meshStandardMaterial color="#1E293B" emissive="#07CCF4" emissiveIntensity={0.7} />
-            </mesh>
-          </group>
-        ))}
-      </group>
-
-      {/* Elevated Metro Guideway */}
-      <group position={[-18, 4.2, 0]}>
-        <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[3.2, 320]} />
-          <meshStandardMaterial color="#0A101D" emissive="#0083D0" emissiveIntensity={0.4} />
-        </mesh>
-        {/* Guideway piers */}
-        {Array.from({ length: 16 }).map((_, i) => (
-          <mesh key={i} position={[0, -2.1, i * 20 - 150]}>
-            <cylinderGeometry args={[0.7, 0.9, 4.2, 8]} />
-            <meshStandardMaterial color="#1E293B" />
-          </mesh>
-        ))}
-      </group>
-    </group>
-  )
-}
-
-// ── Master 3D Scene Assembly ────────────────────────────────────────────────
-function CinematicScene({
-  replayKey,
-  onTimelineProgress,
-}: {
-  replayKey: number
-  onTimelineProgress: (elapsed: number) => void
-}) {
-  const elapsedRef = useRef(0)
-
-  const handleProgress = (t: number) => {
-    elapsedRef.current = t
-    onTimelineProgress(t)
-  }
-
-  return (
-    <>
-      {/* Deep Navy/Black Background & Atmospheric Fog */}
-      <color attach="background" args={['#060815']} />
-      <fog attach="fog" args={['#060815', 25, 200]} />
-
-      {/* Ground Haze */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.5, 0]}>
-        <planeGeometry args={[500, 500]} />
-        <shaderMaterial
-          transparent
-          depthWrite={false}
-          vertexShader={`
-            varying vec2 vUv;
-            void main() {
-              vUv = uv;
-              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            }
-          `}
-          fragmentShader={`
-            varying vec2 vUv;
-            void main() {
-              float d = distance(vUv, vec2(0.5));
-              float alpha = smoothstep(0.1, 0.5, d);
-              gl_FragColor = vec4(0.024, 0.031, 0.082, alpha * 0.95);
-            }
-          `}
-        />
-      </mesh>
-
-      {/* Lighting: Luminous Blue/Cyan Directional & Ambient */}
-      <ambientLight color="#001833" intensity={0.8} />
-      <directionalLight position={[40, 90, 40]} color="#07CCF4" intensity={1.8} />
-      <directionalLight position={[-60, 50, -40]} color="#005AA6" intensity={1.2} />
-      <hemisphereLight args={['#07CCF4', '#060815', 0.6]} />
-
-      {/* Camera Flight Controller */}
-      <CinematicCameraRig replayKey={replayKey} onTimelineProgress={handleProgress} />
-
-      {/* Ground & Infrastructure */}
-      <RoadAndTransitGrid elapsed={elapsedRef.current} />
-
-      {/* City Architecture */}
-      <CityArchitecturalLandscape elapsed={elapsedRef.current} />
-
-      {/* Moving Traffic */}
-      <MovingTrafficStream elapsed={elapsedRef.current} />
-
-      {/* Moving Elevated Metro */}
-      <MovingMetroTrain elapsed={elapsedRef.current} />
-
-      {/* Light Sweep at 4.2s */}
-      <SkylineLightSweep elapsed={elapsedRef.current} />
-
-      {/* Ambient Data Particles */}
-      <AmbientCityParticles elapsed={elapsedRef.current} />
-    </>
-  )
-}
-
-export function CinematicHeroCity({ replayKey, onTimelineProgress }: CinematicHeroCityProps) {
-  return (
-    <div className="absolute inset-0 w-full h-full overflow-hidden bg-[#060815]">
-      {/* HTML5 Video Layer (Option C implementation with poster fallback) */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        poster="/media/metacity-hero-poster.webp"
-        className="absolute inset-0 w-full h-full object-cover opacity-25 pointer-events-none mix-blend-screen"
+    <div className="absolute inset-0 w-screen h-screen bg-[#05080c] z-0 overflow-hidden" style={{ width: '100vw', height: '100vh' }}>
+      {/* Safe 3D Canvas layer */}
+      <Canvas 
+        className="absolute inset-0 pointer-events-none"
+        gl={{ powerPreference: 'high-performance', antialias: false }}
+        dpr={[1, 2]}
       >
-        <source src="/media/metacity-hero.webm" type="video/webm" />
-        <source src="/media/metacity-hero.mp4" type="video/mp4" />
-      </video>
-
-      {/* Interactive 3D Three.js Metropolis Scene with 6-Second Camera Animation */}
-      <Canvas
-        camera={{ position: [0, 160, 200], fov: 42, near: 1, far: 500 }}
-        gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.25 }}
-        className="w-full h-full"
-      >
-        <CinematicScene replayKey={replayKey} onTimelineProgress={onTimelineProgress} />
+        {/* Isometric wide-angle camera positioned to prevent clipping */}
+        <OrthographicCamera 
+          makeDefault 
+          position={[60, 60, 60]} 
+          zoom={18} 
+          near={-500} 
+          far={1000} 
+          onUpdate={c => c.lookAt(0, 0, 0)}
+        />
+        
+        <ambientLight intensity={1.5} />
+        <directionalLight position={[10, 20, 10]} intensity={3} color="#ffffff" castShadow />
+        <directionalLight position={[-10, -10, 10]} intensity={2} color="#00E5FF" />
+        
+        <React.Suspense fallback={null}>
+          <ProceduralCityGrid />
+        </React.Suspense>
       </Canvas>
     </div>
   )

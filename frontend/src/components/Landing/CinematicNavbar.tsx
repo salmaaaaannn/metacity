@@ -87,8 +87,15 @@ export function CinematicNavbar({ onEnterCity }: CinematicNavbarProps) {
           </button>
         </div>
 
-        {/* Action Button */}
-        <div className="flex items-center space-x-3">
+        {/* Profile & Action Button */}
+        <div className="flex items-center space-x-4">
+          <div className="hidden sm:flex items-center space-x-2 border-r border-slate-700/50 pr-4">
+            <div className="w-7 h-7 rounded-full bg-[#151A21] border border-cyan-500/30 flex items-center justify-center">
+              <span className="text-[10px] text-cyan-400 font-bold">KS</span>
+            </div>
+            <span className="text-xs font-mono text-slate-300">Khan Salman</span>
+          </div>
+
           <button
             onClick={onEnterCity}
             className="px-4 py-2 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/50 hover:border-cyan-300 text-cyan-300 hover:text-white font-bold text-xs font-mono uppercase tracking-wider shadow-[0_0_15px_rgba(7,204,244,0.2)] hover:shadow-[0_0_20px_rgba(7,204,244,0.4)] transition-all"
